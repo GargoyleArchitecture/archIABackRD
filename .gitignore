@@ -1,0 +1,106 @@
+# =========================
+# Environments / Secrets
+# =========================
+.env
+.env.*
+# keep only templates/examples
+!.env.example
+!.env.template
+!back/.env.example
+!front/.env.example
+
+# =========================
+# Virtual environments
+# =========================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.python-version
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =========================
+# App data / DB / Indices
+# =========================
+keys/
+images/
+logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+chroma_db/
+back/chroma_db/
+feedback_db/
+state_db/
+
+# =========================
+# Docs (ignored by default)
+# =========================
+docs/
+
+# --- Allowlist RAG source docs (version only sources, not index) ---
+!back/docs/
+!back/docs/**
+
+# =========================
+# Frontend / Node
+# =========================
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# Editors / OS
+# =========================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+desktop.ini
+
+# =========================
+# Project-specific
+# =========================
+tesisdbmarquia-cb23d2034301.json
