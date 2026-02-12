@@ -515,19 +515,6 @@ async def message(
 
     return clean_payload
 
-    # --- Payload al front (no pisamos suggestions si las necesitas) ---
-    clean_payload = {
-        "endMessage": end_msg,
-        "mermaidCode": mermaid_code,
-        "diagram": diagram_obj,                # ahora puede venir vacío si user_intent == "diagram"
-        "messages": result.get("turn_messages", []),
-        "session_id": session_id,
-        "message_id": message_id,
-        "thread_id": thread_id,
-        "suggestions": result.get("suggestions", []),
-    }
-
-    return clean_payload
 
 
 # ===================== /feedback ========================
