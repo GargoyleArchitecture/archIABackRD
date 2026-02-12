@@ -49,7 +49,7 @@ def _embeddings():
     # OpenAI (pública/compatibles)
     from langchain_openai import OpenAIEmbeddings
     model = os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small")
-    return OpenAIEmbeddings(model=model)
+    return OpenAIEmbeddings(model=model, chunk_size=10)
 
 
 def create_or_load_vectorstore() -> Chroma:
