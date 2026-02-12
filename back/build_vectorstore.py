@@ -90,13 +90,45 @@ def _load_docs() -> List:
 
 
 def _split_docs(docs: List):
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1200,
-        chunk_overlap=200,
-        add_start_index=True,
+    # Token-aware splitting avoids occasional oversize embedding inputs.
+    splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        encoding_name="cl100k_base",
+        chunk_size=500,
+        chunk_overlap=50,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
     return splitter.split_documents(docs)
+
+def _truncate_oversized_chunks(chunks: List, max_tokens: int = 7000) -> List:
+    """
+    Capa de seguridad: evita que cualquier chunk exceda el límite de contexto
+    del endpoint de embeddings (8192 tokens en algunos modelos/configuraciones).
+    """
+    try:
+        import tiktoken
+        enc = tiktoken.get_encoding("cl100k_base")
+    except Exception:
+        # Si no hay tiktoken, devolvemos los chunks tal cual.
+        return chunks
+
+    fixed = []
+    clipped = 0
+    max_seen = 0
+    for d in chunks:
+        text = d.page_content or ""
+        toks = enc.encode(text)
+        tok_len = len(toks)
+        if tok_len > max_seen:
+            max_seen = tok_len
+        if tok_len > max_tokens:
+            d.page_content = enc.decode(toks[:max_tokens])
+            clipped += 1
+        fixed.append(d)
+
+    print(f"[build] max tokens in chunk (before safety clip): {max_seen}")
+    if clipped:
+        print(f"[build] clipped oversized chunks: {clipped}")
+    return fixed
 
 
 def main():
@@ -109,6 +141,7 @@ def main():
         raise SystemExit(1)
 
     chunks = _split_docs(docs)
+    chunks = _truncate_oversized_chunks(chunks, max_tokens=7000)
     print(f"[build] Total chunks: {len(chunks)}")
 
     # Embeddings y vectorstore
@@ -119,12 +152,6 @@ def main():
         persist_directory=str(PERSIST_DIR),
         collection_name=COLLECTION_NAME,
     )
-    vectordb = Chroma.from_documents(
-    documents=chunks,
-    embedding=emb,
-    persist_directory=str(PERSIST_DIR),
-    collection_name=COLLECTION_NAME,
-)
 
 # Persistencia:
 # - langchain-chroma: ya quedó persistido automáticamente
